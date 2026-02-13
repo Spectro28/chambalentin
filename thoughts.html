@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mis pensamientos 💭</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Great+Vibes&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Variables ───────────────────────────── */
+    :root {
+      --wine:       #6b1a30;
+      --wine-deep:  #3d0a18;
+      --wine-mid:   #8c2840;
+      --wine-light: #b04060;
+      --cream:      #f5ede0;
+      --cream-warm: #ede0cc;
+      --gold:       #c8963a;
+      --text-dark:  #2a0a12;
+      --text-mid:   #5a2030;
+      --font-serif:   'Cormorant Garamond', Georgia, serif;
+      --font-cursive: 'Great Vibes', cursive;
+      --font-body:    'Crimson Pro', Georgia, serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: radial-gradient(ellipse at 40% 60%, #3d1020 0%, #1a0810 60%, #0d0408 100%);
+      min-height: 100vh;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 16px 80px;
+      font-family: var(--font-body);
+    }
+
+    /* ── Carta / contenedor ──────────────────── */
+    .page-wrap {
+      max-width: 620px; width: 100%;
+      background: linear-gradient(170deg, var(--cream) 0%, #f9f0e4 100%);
+      border-radius: 4px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 4px 16px rgba(0,0,0,0.3);
+      padding: clamp(32px,7vw,60px) clamp(28px,7vw,56px);
+      background-image:
+        repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,140,100,0.05) 27px,rgba(180,140,100,0.05) 28px),
+        linear-gradient(170deg, var(--cream) 0%, #f9f0e4 100%);
+    }
+
+    .ornament {
+      text-align: center; font-family: var(--font-serif);
+      font-size: 0.85rem; letter-spacing: 0.3em;
+      color: var(--wine-mid); margin-bottom: 22px; opacity: 0.75;
+    }
+
+    h1 {
+      font-family: var(--font-cursive); font-size: clamp(2rem,6vw,3.2rem);
+      color: var(--wine); text-align: center; margin-bottom: 10px; line-height: 1.2;
+    }
+
+    .rule {
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 18px 0; opacity: 0.55;
+    }
+
+    p {
+      font-family: var(--font-body); font-style: italic;
+      font-size: clamp(0.95rem,2.5vw,1.08rem); color: var(--text-dark);
+      line-height: 1.9; margin-bottom: 18px; font-weight: 300;
+    }
+    p:last-of-type { margin-bottom: 0; }
+
+    /* ── Botón ROSAS ─────────────────────────── */
+    .roses-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin: 36px auto 0;
+      width: fit-content;
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--cream);
+      background: linear-gradient(135deg, var(--wine) 0%, var(--wine-mid) 100%);
+      border: none;
+      border-radius: 50px;
+      padding: 14px 34px;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(107,26,48,0.5);
+      transition: transform .25s ease, box-shadow .25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .roses-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.18) 50%, transparent 60%);
+      transform: translateX(-100%);
+      transition: transform .55s ease;
+    }
+    .roses-btn:hover::after { transform: translateX(100%); }
+    .roses-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 36px rgba(107,26,48,0.6);
+    }
+    .roses-btn:active { transform: scale(0.97); }
+
+    .btn-rose-icon {
+      font-size: 1.25em;
+      animation: roseFloat 2s ease-in-out infinite;
+    }
+    @keyframes roseFloat {
+      0%,100% { transform: translateY(0) rotate(-5deg); }
+      50%      { transform: translateY(-4px) rotate(5deg); }
+    }
+
+    /* ── OVERLAY ─────────────────────────────── */
+    #polaroid-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 4, 8, 0.88);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      cursor: pointer; /* click fuera = cerrar */
+    }
+    #polaroid-overlay.visible {
+      display: flex;
+      animation: overlayIn 0.4s ease both;
+    }
+    @keyframes overlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── FOTO POLAROID ───────────────────────── */
+    .polaroid {
+      background: #fdf8f2;
+      border-radius: 3px;
+      padding: 14px 14px 0 14px;
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.7),
+        0  8px 24px rgba(0,0,0,0.4),
+        inset 0 0 0 1px rgba(0,0,0,0.06);
+      max-width: min(380px, calc(100vw - 48px));
+      width: 100%;
+      cursor: default; /* no propaga el click de cierre */
+      animation: polaroidDrop 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+      transform-origin: center top;
+      position: relative;
+    }
+    @keyframes polaroidDrop {
+      0%   { opacity: 0; transform: translateY(-60px) rotate(-4deg) scale(0.85); }
+      60%  { transform: translateY(8px)  rotate(1.5deg) scale(1.02); }
+      80%  { transform: translateY(-4px) rotate(-0.8deg) scale(1); }
+      100% { opacity: 1; transform: translateY(0) rotate(-1.5deg) scale(1); }
+    }
+
+    /* ── Foto dentro del polaroid ─────────────── */
+    .polaroid-photo {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      display: block;
+      border-radius: 1px;
+      /* Mientras carga: fondo de color */
+      background: linear-gradient(135deg, #8c2840 0%, #5a1020 100%);
+    }
+
+    /* ── Espacio blanco inferior (estilo polaroid) */
+    .polaroid-caption {
+      padding: 18px 10px 20px;
+      text-align: center;
+    }
+    .polaroid-caption p {
+      font-family: var(--font-cursive);
+      font-style: normal;
+      font-size: clamp(1rem, 4vw, 1.45rem);
+      color: #2a0a12;
+      line-height: 1.45;
+      margin: 0;
+      font-weight: 400;
+    }
+    .polaroid-caption .carpe {
+      display: block;
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(0.65rem, 2vw, 0.8rem);
+      color: #8a4050;
+      letter-spacing: 0.18em;
+      margin-top: 6px;
+      font-weight: 400;
+    }
+
+    /* ── Botón cerrar ────────────────────────── */
+    .close-btn {
+      position: absolute;
+      top: -14px; right: -14px;
+      width: 32px; height: 32px;
+      background: var(--wine);
+      border: 2px solid rgba(245,237,224,0.5);
+      border-radius: 50%;
+      color: var(--cream);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform .2s ease, background .2s ease;
+      line-height: 1;
+    }
+    .close-btn:hover { transform: scale(1.15); background: var(--wine-mid); }
+
+    /* ── Pétalos flotantes decorativos ──────── */
+    .petal {
+      position: fixed;
+      font-size: 1.4rem;
+      pointer-events: none;
+      z-index: 999;
+      animation: petalFall linear forwards;
+      opacity: 0;
+    }
+    @keyframes petalFall {
+      0%   { opacity: 0; transform: translateY(-20px) rotate(0deg); }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { opacity: 0;   transform: translateY(100vh) rotate(720deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Contenido de la carta ───────────────── -->
+  <div class="page-wrap">
+    <div class="ornament">✦ ♥ ✦</div>
+    <h1>My thoughts</h1>
+    <div class="rule"></div>
+
+    <p><strong>"El amor todo lo sufre, todo lo cree, todo lo espera, todo lo soporta. El amor nunca deja de ser." — Corintios 13:7-8</strong></p>
+
+    <p>Aunque este versículo habla sobre el amor de Dios hacia nosotros, creo que vale la pena recordarlo, porque desde ahí es como deberíamos amar realmente: a pesar de todo, a pesar de los problemas y dificultades que se nos presenten en el camino. Tú y yo sabemos que lo nuestro es verdadero y que somos el amor de la vida del otro.</p>
+
+    <p>También es importante aclarar que este versículo no habla de aguantar abusos, y eso lo tengo muy presente. Hay veces en las que mi comportamiento no tiene una causa real; a veces nace de inseguridades o de la falta de autoestima. Pero por ti, como lo has notado, he cambiado para bien y sigo trabajando en no tener esos comportamientos contigo. No quiero ser una carga ni una traba en tu vida; quiero ser quien te impulse a ser mejor cada día. Quiero ser esa persona que te alegre, que se sienta orgullosa de ti cuando consigas grandes y pequeños logros, porque sepas que siempre estuvo ahí apoyándote en todo.</p>
+
+    <p>También quiero recordarte lo bien que me haces sentir cada vez que estoy contigo, cada vez que te recuerdo, aunque recordarte a veces me haga extrañarte cuando no estás. Se siente tan bonito que, a pesar de que llevamos seis años de novios, ese sentimiento sigue creciendo. Cada día te veo más linda, cada día me pareces más atractiva, cada día me sorprende más lo maravillosa que eres.</p>
+
+    <p>Sé que no eres egocéntrica, jajaja, pero tampoco te vayas al otro extremo de menospreciarte o creer que no vales porque no eres como tal o cual persona. Nadie es como alguien más, porque en esta vida tú eres tú. Y aunque a veces no veas lo que vales, yo sí lo veo… y no es poco, nada poco. Tú vales muchísimo.</p>
+
+    <p>Como lo mencionaba antes, estos son algunos de mis pensamientos y parte de lo que quería decirte. Y aunque mis ideas no tengan un orden perfecto —como habrás notado, salto de un tema a otro como si fuera un lenguaje de programación, jajaja— quiero que sepas que todo lo digo de corazón.</p>
+
+    <p>Tú eres el motivo por el que quiero ser mejor cada día. Por ti lo daré todo, aun cuando parezca que no hay luz en este mundo. Y también quiero que tú des lo mejor de ti, por tu familia, por los lindos angelitos que nos cuidan y, especialmente, por ti.</p>
+
+    <div class="rule"></div>
+
+    <!-- BOTÓN ROSAS -->
+    <button class="roses-btn" onclick="openPolaroid()">
+      <span class="btn-rose-icon">🌹</span>
+      Recoje Rosas Mientras Puedas
+      <span class="btn-rose-icon" style="animation-delay: 0.4s;">🌹</span>
+    </button>
+  </div>
+
+  <!-- ── OVERLAY POLAROID ───────────────────── -->
+  <div id="polaroid-overlay" onclick="closePolaroid(event)">
+    <div class="polaroid" id="polaroid-card" onclick="event.stopPropagation()">
+
+      <!-- Botón cerrar -->
+      <button class="close-btn" onclick="closePolaroid()" title="Cerrar">✕</button>
+
+      <!-- Foto (rosas rojas, imagen pública) -->
+      <img
+        class="polaroid-photo"
+        src="https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=600&q=80&auto=format&fit=crop"
+        alt="Rosas rojas"
+        loading="eager"
+      />
+
+      <!-- Espacio blanco tipo polaroid con texto -->
+      <div class="polaroid-caption">
+        <p>No dejes para mañana el amor que puedes dar hoy. No esperes ese dia para empezar a vivir.</p>
+        <span class="carpe">— Carpe Diem. Disfrúta tu vida amor —</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* ── Abrir polaroid ───────────────────────── */
+    function openPolaroid() {
+      const overlay = document.getElementById('polaroid-overlay');
+      overlay.classList.add('visible');
+      document.body.style.overflow = 'hidden';
+
+      // Lanzar pétalos decorativos
+      spawnPetals();
+    }
+
+    /* ── Cerrar polaroid ──────────────────────── */
+    function closePolaroid(e) {
+      // Si el evento viene del overlay (no de la carta), cerrar
+      if (e && e.currentTarget !== e.target && e.target.id !== 'polaroid-overlay') return;
+      const overlay = document.getElementById('polaroid-overlay');
+      overlay.style.animation = 'overlayOut 0.3s ease forwards';
+
+      // Inyectar keyframes de salida si no existen
+      if (!document.getElementById('kf-out')) {
+        const s = document.createElement('style');
+        s.id = 'kf-out';
+        s.textContent = '@keyframes overlayOut { to { opacity: 0; } }';
+        document.head.appendChild(s);
+      }
+
+      setTimeout(() => {
+        overlay.classList.remove('visible');
+        overlay.style.animation = '';
+        document.body.style.overflow = '';
+      }, 300);
+    }
+
+    /* ── Pétalos flotantes ────────────────────── */
+    function spawnPetals() {
+      const emojis = ['🌹','🌸','🌺','❤️','✨'];
+      const count  = 18;
+
+      for (let i = 0; i < count; i++) {
+        const p  = document.createElement('span');
+        p.className  = 'petal';
+        p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        p.style.left     = Math.random() * 100 + 'vw';
+        p.style.top      = '-40px';
+        p.style.fontSize = (Math.random() * 1.2 + 0.8) + 'rem';
+        const dur  = Math.random() * 2.5 + 2;
+        const delay = Math.random() * 1.5;
+        p.style.animationDuration = dur + 's';
+        p.style.animationDelay   = delay + 's';
+        document.body.appendChild(p);
+
+        // Limpiar del DOM al terminar
+        p.addEventListener('animationend', () => p.remove(), { once: true });
+      }
+    }
+
+    /* ── Cerrar con teclado ESC ───────────────── */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closePolaroid();
+    });
+  </script>
+</body>
+</html>

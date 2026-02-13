@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Para ti 💌</title>
+
+  <!-- Fuentes elegantes cursivas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Great+Vibes&display=swap" rel="stylesheet"/>
+
+  <!-- p5.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ========================================
+       1. ANIMACIÓN INTRO — corazones flotantes
+       ======================================== -->
+  <div id="intro-screen">
+    <div id="p5-canvas-container"></div>
+    <div id="intro-text">
+      <span class="intro-heart">♥</span>
+    </div>
+  </div>
+
+  <!-- ========================================
+       2. PREGUNTA PRINCIPAL
+       ======================================== -->
+  <div id="main-content" class="hidden">
+    <div id="bg-particles"></div>
+    <div class="card">
+      <div class="card-heart">♥</div>
+      <h1 class="question">¿Quieres ser mi<br/><em>San Valentín?</em></h1>
+      <p class="subtitle">Anda di que si, te dare chocolate jaja 🌹</p>
+      <div class="buttons">
+        <button id="btn-yes" class="btn btn-yes" onclick="handleYes()">
+          <span class="btn-icon">💖</span>
+          <span class="btn-label">¡Sí!</span>
+        </button>
+        <button id="btn-no" class="btn btn-no"
+                onmouseover="escapeNo(this)"
+                ontouchstart="escapeNo(this)">
+          <span class="btn-label">No</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================
+       3. CELEBRACIÓN BREVE "SÍ"
+       ======================================== -->
+  <div id="yes-screen" class="hidden">
+    <div id="yes-canvas-container"></div>
+    <div class="yes-message">
+      <div class="yes-heart-big">💕</div>
+      <h2>¡Mas te vale que hayas dicho que si!</h2>
+       <div class="pelusa-heart-wrap">
+        <img src="images/pelusa.jpeg" alt="Pelusa" class="pelusa-heart-img" />
+      </div>
+
+      <p>Preparando algo especial para ti…</p>
+    </div>
+  </div>
+
+  <!-- ========================================
+       4. CARTA DE AMOR
+       ======================================== -->
+  <div id="letter-screen" class="hidden">
+
+    <!-- Fondo animado con p5 (corazones suaves) -->
+    <div id="letter-bg-canvas"></div>
+
+    <!-- Contenedor centrado -->
+    <div id="letter-stage">
+
+      <!-- ── SOBRE ──────────────────────────── -->
+      <div id="envelope" class="envelope">
+        <!-- Cuerpo del sobre -->
+        <div class="env-body">
+          <!-- Triángulos laterales y base (decorativos, en CSS) -->
+          <div class="env-flap env-left"></div>
+          <div class="env-flap env-right"></div>
+          <div class="env-flap env-bottom"></div>
+        </div>
+        <!-- Solapa superior que se abre -->
+        <div class="env-flap env-top" id="env-top"></div>
+        <!-- Sello de cera -->
+        <div class="env-seal" id="env-seal">♥</div>
+      </div>
+
+      <!-- ── CARTA ──────────────────────────── -->
+      <div id="letter-card" class="letter-card">
+        <div class="letter-inner">
+
+          <div class="letter-ornament">✦ ♥ ✦</div>
+
+          <!-- Título: letras aparecen una a una con micro-corazón -->
+          <h1 class="letter-title" id="letter-title"></h1>
+
+          <div class="letter-rule"></div>
+
+          <!-- Párrafo 1 -->
+          <p class="letter-para" id="para-0"></p>
+
+          <!-- Párrafo 2 -->
+          <p class="letter-para" id="para-1"></p>
+
+          <div class="letter-rule thin"></div>
+
+          <!-- Firma -->
+          <p class="letter-sign" id="letter-sign"></p>
+
+          <!-- Botón "Ver pensamientos" -->
+          <div class="letter-cta hidden" id="letter-cta">
+            <a href="thoughts.html" class="cta-btn">
+              <span class="cta-heart">♥</span>
+              Entra en mi Mente
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /letter-stage -->
+  </div><!-- /letter-screen -->
+
+  <script src="script.js"></script>
+</body>
+</html>

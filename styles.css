@@ -1,0 +1,813 @@
+/* ===================================
+   VARIABLES & RESET
+   =================================== */
+:root {
+  /* Paleta principal: vino profundo + crema cálida */
+  --wine:         #6b1a30;
+  --wine-deep:    #3d0a18;
+  --wine-mid:     #8c2840;
+  --wine-light:   #b04060;
+  --cream:        #f5ede0;
+  --cream-warm:   #ede0cc;
+  --cream-deep:   #d4bfa0;
+  --gold:         #c8963a;
+  --gold-light:   #e8b86a;
+  --text-dark:    #2a0a12;
+  --text-mid:     #5a2030;
+  --text-light:   #8a4050;
+  --white:        #fff;
+
+  /* Tipografía */
+  --font-serif:   'Cormorant Garamond', Georgia, serif;
+  --font-cursive: 'Great Vibes', cursive;
+  --font-body:    'Crimson Pro', Georgia, serif;
+
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: var(--font-body);
+  background: var(--wine-deep);
+}
+
+/* ===================================
+   PANTALLA INTRO
+   =================================== */
+#intro-screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  background: radial-gradient(ellipse at center, #4a1020 0%, #1a0510 100%);
+  transition: opacity 1.2s var(--ease-smooth), visibility 1.2s;
+}
+#intro-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+
+#p5-canvas-container { position: absolute; inset: 0; }
+#p5-canvas-container canvas { display: block; }
+
+#intro-text { position: relative; z-index: 10; pointer-events: none; }
+
+.intro-heart {
+  display: block;
+  font-size: clamp(80px, 18vw, 160px);
+  color: var(--wine-light);
+  animation: introPulse 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 40px rgba(176, 64, 96, 0.9))
+          drop-shadow(0 0 90px rgba(107, 26, 48, 0.6));
+}
+@keyframes introPulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.1); }
+}
+
+/* ===================================
+   MAIN CONTENT (pregunta)
+   =================================== */
+#main-content {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: radial-gradient(ellipse at 60% 40%, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+  overflow: hidden;
+}
+#main-content.hidden { display: none; }
+
+#bg-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+.bg-particle {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle, rgba(220,80,120,0.2) 0%, transparent 70%);
+  animation: floatBlob linear infinite;
+  pointer-events: none;
+}
+@keyframes floatBlob {
+  0%   { transform: translateY(100vh) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(-20vh) scale(1.3); opacity: 0; }
+}
+
+.card {
+  position: relative; z-index: 2;
+  background: rgba(255,255,255,0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(200,150,170,0.35);
+  border-radius: 28px;
+  box-shadow: 0 24px 64px rgba(107,26,48,0.2), 0 8px 24px rgba(107,26,48,0.1);
+  padding: clamp(36px,8vw,72px) clamp(32px,7vw,64px);
+  max-width: 520px; width: 100%;
+  text-align: center;
+  animation: cardEnter 0.8s var(--ease-smooth) both;
+}
+@keyframes cardEnter {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.card-heart {
+  font-size: 2.6rem; margin-bottom: 16px;
+  animation: heartBeat 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 2px 8px rgba(107,26,48,0.4));
+  color: var(--wine-mid);
+}
+@keyframes heartBeat {
+  0%,100% { transform: scale(1); }
+  14%     { transform: scale(1.22); }
+  28%     { transform: scale(1.06); }
+  42%     { transform: scale(1.18); }
+}
+
+.question {
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 5.5vw, 2.7rem);
+  font-weight: 600; color: var(--text-dark);
+  line-height: 1.25; margin-bottom: 14px;
+}
+.question em { font-style: italic; color: var(--wine-mid); display: block; }
+
+.subtitle {
+  font-size: clamp(0.9rem,2.5vw,1.05rem);
+  color: var(--text-light); font-weight: 300;
+  letter-spacing: 0.02em; margin-bottom: 36px;
+}
+
+.buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+  position: relative; border: none; border-radius: 50px;
+  cursor: pointer; font-family: var(--font-body); font-size: 1.05rem;
+  letter-spacing: 0.04em; padding: 14px 38px;
+  transition: transform 0.25s var(--ease-smooth), box-shadow 0.25s var(--ease-smooth);
+  overflow: hidden; white-space: nowrap; user-select: none;
+}
+.btn::after {
+  content: '';position: absolute; inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.32) 50%, transparent 60%);
+  transform: translateX(-100%); transition: transform 0.55s ease; pointer-events: none;
+}
+.btn:hover::after { transform: translateX(100%); }
+
+.btn-yes {
+  background: linear-gradient(135deg, var(--wine) 0%, var(--wine-mid) 100%);
+  color: var(--white);
+  box-shadow: 0 8px 24px rgba(107,26,48,0.4);
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-yes:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 16px 36px rgba(107,26,48,0.5); }
+.btn-yes:active { transform: translateY(-1px) scale(0.98); }
+
+.btn-icon { font-size: 1.15em; animation: iconBounce 1.2s ease-in-out infinite; }
+@keyframes iconBounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.28)} }
+
+.btn-no {
+  background: rgba(255,255,255,0.7); color: var(--text-mid);
+  border: 1.5px solid rgba(107,26,48,0.2);
+  box-shadow: 0 4px 14px rgba(107,26,48,0.07); font-size: 0.95rem;
+}
+.btn-no:hover { background: rgba(252,244,246,0.9); }
+
+/* ===================================
+   PANTALLA "SÍ"
+   =================================== */
+#yes-screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #4a1020 0%, #1a0510 100%);
+  z-index: 200; text-align: center;
+}
+#yes-screen.hidden { display: none; }
+#yes-canvas-container { position: absolute; inset: 0; pointer-events: none; }
+#yes-canvas-container canvas { display: block; }
+
+.yes-message { position: relative; z-index: 10; color: var(--white); padding: 20px; animation: yesEnter 0.7s var(--ease-smooth) both; }
+@keyframes yesEnter { from{opacity:0;transform:scale(0.7)} to{opacity:1;transform:scale(1)} }
+.yes-heart-big { font-size: clamp(72px,20vw,140px); line-height: 1; margin-bottom: 18px; animation: yesBeat 1s ease-in-out infinite; }
+@keyframes yesBeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.yes-message h2 { font-family: var(--font-serif); font-size: clamp(1.5rem,5vw,2.4rem); font-weight: 600; margin-bottom: 12px; color: #e8a8c0; }
+.yes-message p  { font-weight: 300; font-size: clamp(0.95rem,3vw,1.15rem); color: rgba(255,255,255,0.75); letter-spacing: 0.02em; }
+
+/* ===================================
+   PANTALLA CARTA DE AMOR
+   =================================== */
+#letter-screen {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at 40% 60%, #3d1020 0%, #1a0810 60%, #0d0408 100%);
+  z-index: 300; overflow-y: auto; padding: 30px 16px;
+}
+#letter-screen.hidden { display: none; }
+
+#letter-bg-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+#letter-bg-canvas canvas { display: block; }
+
+#letter-stage {
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100%; width: 100%; max-width: 640px; margin: 0 auto;
+}
+
+/* ── SOBRE ──────────────────────────────────── */
+.envelope {
+  position: relative;
+  width: clamp(200px, 55vw, 320px);
+  height: clamp(140px, 38vw, 220px);
+  cursor: pointer;
+  /* Entrada del sobre */
+  animation: envDrop 0.9s var(--ease-smooth) both;
+  transform-origin: center bottom;
+}
+@keyframes envDrop {
+  from { opacity: 0; transform: translateY(-80px) scale(0.85); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Cuerpo del sobre */
+.env-body {
+  position: absolute; inset: 0;
+  background: linear-gradient(175deg, var(--cream) 0%, var(--cream-warm) 100%);
+  border-radius: 4px 4px 6px 6px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+
+/* Triángulos del sobre con clip-path */
+.env-flap {
+  position: absolute;
+  width: 0; height: 0;
+  border-style: solid;
+}
+.env-left {
+  left: 0; bottom: 0;
+  border-width: clamp(70px,19vw,110px) 0 0 clamp(100px,27.5vw,160px);
+  border-color: transparent transparent transparent var(--cream-deep);
+}
+.env-right {
+  right: 0; bottom: 0;
+  border-width: clamp(70px,19vw,110px) clamp(100px,27.5vw,160px) 0 0;
+  border-color: transparent var(--cream-deep) transparent transparent;
+}
+.env-bottom {
+  left: 0; bottom: 0; right: 0;
+  width: 0; height: 0;
+  border-left: clamp(100px,27.5vw,160px) solid transparent;
+  border-right: clamp(100px,27.5vw,160px) solid transparent;
+  border-bottom: clamp(70px,19vw,110px) solid var(--cream-warm);
+  margin: 0 auto; position: absolute;
+}
+
+/* Solapa superior */
+.env-top {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 0;
+  border-left: clamp(100px,27.5vw,160px) solid transparent;
+  border-right: clamp(100px,27.5vw,160px) solid transparent;
+  border-top: clamp(80px,22vw,135px) solid var(--cream-deep);
+  transform-origin: top center;
+  transition: transform 0.9s cubic-bezier(0.68,-0.55,0.27,1.55);
+  z-index: 4;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+.env-top.open {
+  transform: rotateX(175deg);
+}
+
+/* Sello de cera */
+.env-seal {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(36px,9vw,54px);
+  height: clamp(36px,9vw,54px);
+  background: radial-gradient(circle, var(--wine-light) 0%, var(--wine) 70%);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(16px,4vw,24px);
+  color: var(--cream);
+  box-shadow: 0 2px 12px rgba(107,26,48,0.6), inset 0 1px 3px rgba(255,255,255,0.2);
+  z-index: 5;
+  transition: transform 0.4s var(--ease-smooth), opacity 0.4s;
+}
+.env-seal.broken {
+  transform: translate(-50%, -50%) scale(0) rotate(45deg);
+  opacity: 0;
+}
+
+/* ── CARTA ──────────────────────────────────── */
+.letter-card {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0) scale(0.75);
+  /* Ancho: ocupa el stage entero menos márgenes, tope en 560px */
+  width: min(560px, calc(100vw - 48px));
+  box-sizing: border-box;
+  overflow: hidden;          /* texto nunca desborda la carta */
+  background: linear-gradient(170deg, var(--cream) 0%, #f9f0e4 100%);
+  border-radius: 3px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2),
+              inset 0 0 0 1px rgba(200,150,100,0.15);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 3;
+  transition: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 27px,
+      rgba(180,140,100,0.06) 27px,
+      rgba(180,140,100,0.06) 28px
+    ),
+    linear-gradient(170deg, var(--cream) 0%, #f9f0e4 100%);
+}
+
+/* Estado: carta visible (JS la activa) */
+.letter-card.revealed {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.letter-inner {
+  padding: clamp(24px, 5vw, 44px) clamp(24px, 5vw, 40px) clamp(20px, 4vw, 36px);
+  box-sizing: border-box;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Ornamento */
+.letter-ornament {
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: clamp(0.75rem,2vw,0.9rem);
+  letter-spacing: 0.3em;
+  color: var(--wine-light);
+  margin-bottom: 18px;
+  opacity: 0.8;
+}
+
+/* Título de la carta */
+.letter-title {
+  font-family: var(--font-cursive);
+  font-size: clamp(1.2rem, 3.8vw, 2rem);   /* ← más pequeño para que quepa */
+  color: var(--wine);
+  text-align: center;
+  margin-bottom: 8px;
+  line-height: 1.45;
+  word-break: break-word;      /* evita desbordamiento horizontal */
+  overflow-wrap: break-word;
+  white-space: normal;
+  min-height: 1.5em;
+}
+
+/* Separadores */
+.letter-rule {
+  width: 100%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 16px 0;
+  opacity: 0.6;
+}
+.letter-rule.thin { margin: 20px 0 14px; opacity: 0.35; }
+
+/* Párrafos */
+.letter-para {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(0.92rem, 2.4vw, 1.05rem);
+  color: var(--text-dark);
+  line-height: 1.85;
+  margin-bottom: 16px;
+  min-height: 1.8em;
+  /* Asegurar que el texto nunca se salga */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
+}
+.letter-para:last-of-type { margin-bottom: 0; }
+
+/* Firma */
+.letter-sign {
+  font-family: var(--font-cursive);
+  font-size: clamp(1.4rem,4vw,2rem);
+  color: var(--wine-mid);
+  text-align: right;
+  margin-top: 18px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.letter-sign.visible { opacity: 1; transform: translateY(0); }
+
+/* ── ANIMACIÓN LETRA A LETRA: span de carácter ── */
+.char-span {
+  display: inline;
+  opacity: 0;
+  /* Animación por defecto: aparece desde abajo con corazón */
+  animation: charReveal 0.4s var(--ease-smooth) forwards;
+}
+/* Espacios también son inline para no romper flujo */
+.char-space { display: inline; }
+
+@keyframes charReveal {
+  0%  { opacity: 0; transform: translateY(6px) scale(0.7); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.05); }
+  100%{ opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Mini corazón que aparece y desvanece junto a cada letra */
+.char-heart {
+  display: inline-block;
+  position: relative;
+  animation: microHeart 0.55s ease forwards;
+  font-size: 0.55em;
+  color: var(--wine-light);
+  vertical-align: super;
+  margin: 0 1px;
+}
+@keyframes microHeart {
+  0%   { opacity: 0.9; transform: translateY(-4px) scale(1.2); }
+  60%  { opacity: 0.6; transform: translateY(-10px) scale(0.9); }
+  100% { opacity: 0;   transform: translateY(-16px) scale(0.4); }
+}
+
+/* ── BOTÓN CTA ───────────────────────────────── */
+.letter-cta {
+  margin-top: 28px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.letter-cta.visible { opacity: 1; transform: translateY(0); }
+.letter-cta.hidden { display: none; }
+
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-serif); font-size: clamp(0.9rem,2.5vw,1.05rem);
+  font-weight: 600; letter-spacing: 0.08em;
+  color: var(--cream);
+  background: linear-gradient(135deg, var(--wine) 0%, var(--wine-mid) 100%);
+  border: 1px solid rgba(200,150,100,0.25);
+  border-radius: 50px;
+  padding: 13px 32px;
+  text-decoration: none;
+  box-shadow: 0 8px 28px rgba(107,26,48,0.5);
+  transition: transform 0.25s var(--ease-smooth), box-shadow 0.25s var(--ease-smooth);
+  position: relative; overflow: hidden;
+}
+.cta-btn::after {
+  content: '';position:absolute;inset:0;
+  background: linear-gradient(105deg,transparent 40%,rgba(255,255,255,0.18) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform 0.55s ease;
+}
+.cta-btn:hover::after { transform:translateX(100%); }
+.cta-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 14px 36px rgba(107,26,48,0.6);
+}
+.cta-heart {
+  font-size: 1em;
+  animation: ctaHeartBeat 1.4s ease-in-out infinite;
+}
+@keyframes ctaHeartBeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.3)} }
+
+/* ===================================
+   FOTO PELUSA — FORMA DE CORAZÓN
+   =================================== */
+.pelusa-heart-wrap {
+  position: relative;
+  width: clamp(140px, 36vw, 200px);
+  height: clamp(140px, 36vw, 200px);
+  margin: 18px auto 22px;
+  animation: pelusaEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.3s;
+}
+
+@keyframes pelusaEnter {
+  from { opacity: 0; transform: scale(0.5) rotate(-8deg); }
+  60%  { transform: scale(1.1) rotate(2deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.pelusa-heart-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  /* Máscara de corazón usando -webkit-mask con SVG inline */
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 85 C10 60 5 30 15 18 C25 6 40 8 50 22 C60 8 75 6 85 18 C95 30 90 60 50 85Z' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 85 C10 60 5 30 15 18 C25 6 40 8 50 22 C60 8 75 6 85 18 C95 30 90 60 50 85Z' fill='black'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  /* Resplandor */
+  filter: drop-shadow(0 0 14px rgba(192, 57, 85, 0.65))
+          drop-shadow(0 0 28px rgba(107, 26, 48, 0.45));
+  animation: pelusaBeat 2.2s ease-in-out infinite;
+}
+
+@keyframes pelusaBeat {
+  0%,100% { transform: scale(1);    filter: drop-shadow(0 0 14px rgba(192,57,85,0.65)); }
+  50%      { transform: scale(1.07); filter: drop-shadow(0 0 26px rgba(192,57,85,0.95)); }
+}
+
+/* ===================================================
+   RESPONSIVE — MÓVILES (todos los tamaños)
+   ===================================================
+
+   Breakpoints:
+     xs  : < 360px  (teléfonos muy pequeños: Galaxy A, iPhone SE 1ª gen)
+     sm  : < 480px  (teléfonos medianos: iPhone SE 3, Pixel 5)
+     md  : < 640px  (teléfonos grandes: iPhone 14 Pro Max, Galaxy S24+)
+     lg  : < 768px  (tablets pequeñas en portrait)
+
+   =================================================== */
+
+/* ── GLOBAL MOBILE: scroll habilitado en pantallas de carta ── */
+@media (max-width: 768px) {
+
+  /* Permitir scroll vertical en la carta */
+  #letter-screen {
+    align-items: flex-start;
+    padding: 20px 12px 40px;
+  }
+
+  #letter-stage {
+    justify-content: flex-start;
+    padding-top: 16px;
+  }
+
+  /* Carta ocupa casi toda la pantalla */
+  .letter-card {
+    width: calc(100vw - 24px) !important;
+  }
+
+  .letter-inner {
+    padding: 28px 20px 24px;
+  }
+
+  /* Sobre más pequeño en tablets */
+  .envelope {
+    width: clamp(180px, 60vw, 280px);
+    height: clamp(126px, 42vw, 196px);
+  }
+
+  /* Pantalla sí: no scrolleable */
+  .yes-message {
+    padding: 16px;
+  }
+
+  /* Botones de la pregunta */
+  .buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn {
+    width: 85%;
+    justify-content: center;
+  }
+
+  /* Pelusa más pequeña en tablet */
+  .pelusa-heart-wrap {
+    width: clamp(120px, 30vw, 170px);
+    height: clamp(120px, 30vw, 170px);
+  }
+}
+
+/* ── TELÉFONOS GRANDES: 480px – 640px ─────────────── */
+@media (max-width: 640px) {
+
+  /* Tarjeta pregunta */
+  .card {
+    border-radius: 22px;
+    padding: 32px 24px;
+    margin: 0 8px;
+  }
+
+  .question {
+    font-size: clamp(1.5rem, 6.5vw, 2rem);
+  }
+
+  .subtitle {
+    font-size: 0.92rem;
+    margin-bottom: 28px;
+  }
+
+  /* Pantalla Sí */
+  .yes-heart-big {
+    font-size: clamp(60px, 18vw, 100px);
+    margin-bottom: 12px;
+  }
+  .yes-message h2 {
+    font-size: clamp(1.2rem, 5.5vw, 1.8rem);
+    padding: 0 8px;
+  }
+  .yes-message p {
+    font-size: 0.95rem;
+  }
+
+  /* Foto Pelusa */
+  .pelusa-heart-wrap {
+    width: clamp(110px, 28vw, 160px);
+    height: clamp(110px, 28vw, 160px);
+    margin: 14px auto 18px;
+  }
+
+  /* Carta */
+  .letter-title {
+    font-size: clamp(1.1rem, 4.5vw, 1.55rem);
+  }
+  .letter-para {
+    font-size: clamp(0.88rem, 3.2vw, 1rem);
+    line-height: 1.75;
+  }
+  .letter-sign {
+    font-size: clamp(1.2rem, 5vw, 1.6rem);
+  }
+  .cta-btn {
+    font-size: 0.9rem;
+    padding: 12px 24px;
+  }
+
+  /* Sobre */
+  .envelope {
+    width: clamp(160px, 65vw, 240px);
+    height: clamp(112px, 45.5vw, 168px);
+  }
+  .env-left {
+    border-width: clamp(56px, 22.75vw, 84px) 0 0 clamp(80px, 32.5vw, 120px);
+  }
+  .env-right {
+    border-width: clamp(56px, 22.75vw, 84px) clamp(80px, 32.5vw, 120px) 0 0;
+  }
+  .env-bottom {
+    border-left-width: clamp(80px, 32.5vw, 120px);
+    border-right-width: clamp(80px, 32.5vw, 120px);
+    border-bottom-width: clamp(56px, 22.75vw, 84px);
+  }
+  .env-top {
+    border-left-width: clamp(80px, 32.5vw, 120px);
+    border-right-width: clamp(80px, 32.5vw, 120px);
+    border-top-width: clamp(64px, 26vw, 96px);
+  }
+}
+
+/* ── TELÉFONOS MEDIANOS: 360px – 480px ────────────── */
+@media (max-width: 480px) {
+
+  /* Intro */
+  .intro-heart { font-size: clamp(70px, 22vw, 110px); }
+
+  /* Tarjeta pregunta: sin margen lateral */
+  #main-content { padding: 12px; }
+  .card {
+    border-radius: 18px;
+    padding: 28px 18px;
+    max-width: 100%;
+  }
+
+  .question { font-size: clamp(1.35rem, 7vw, 1.7rem); }
+  .card-heart { font-size: 2.2rem; }
+
+  .btn {
+    width: 90%;
+    padding: 13px 20px;
+    font-size: 0.98rem;
+  }
+
+  /* Pantalla Sí */
+  .yes-message { padding: 12px 10px; }
+  .yes-heart-big {
+    font-size: clamp(50px, 16vw, 80px);
+    margin-bottom: 10px;
+  }
+  .yes-message h2 { font-size: clamp(1.05rem, 5.5vw, 1.5rem); }
+
+  /* Pelusa */
+  .pelusa-heart-wrap {
+    width: clamp(100px, 26vw, 140px);
+    height: clamp(100px, 26vw, 140px);
+    margin: 12px auto 16px;
+  }
+
+  /* Carta */
+  #letter-screen { padding: 12px 8px 32px; }
+  .letter-inner  { padding: 22px 16px 20px; }
+  .letter-ornament { font-size: 0.7rem; margin-bottom: 12px; }
+  .letter-title  { font-size: clamp(1rem, 5vw, 1.4rem); }
+  .letter-para   {
+    font-size: clamp(0.85rem, 3.5vw, 0.98rem);
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+  .letter-rule   { margin: 12px 0; }
+  .letter-sign   { font-size: clamp(1.1rem, 5.5vw, 1.5rem); margin-top: 14px; }
+  .letter-cta    { margin-top: 20px; }
+  .cta-btn {
+    padding: 11px 20px;
+    font-size: 0.85rem;
+    gap: 7px;
+  }
+
+  /* Sobre */
+  .envelope {
+    width: clamp(140px, 72vw, 200px);
+    height: clamp(98px, 50.4vw, 140px);
+  }
+  .env-left {
+    border-width: clamp(49px, 25.2vw, 70px) 0 0 clamp(70px, 36vw, 100px);
+  }
+  .env-right {
+    border-width: clamp(49px, 25.2vw, 70px) clamp(70px, 36vw, 100px) 0 0;
+  }
+  .env-bottom {
+    border-left-width: clamp(70px, 36vw, 100px);
+    border-right-width: clamp(70px, 36vw, 100px);
+    border-bottom-width: clamp(49px, 25.2vw, 70px);
+  }
+  .env-top {
+    border-left-width: clamp(70px, 36vw, 100px);
+    border-right-width: clamp(70px, 36vw, 100px);
+    border-top-width: clamp(56px, 28.8vw, 80px);
+  }
+  .env-seal {
+    width: clamp(28px, 7.2vw, 40px);
+    height: clamp(28px, 7.2vw, 40px);
+    font-size: clamp(12px, 3.2vw, 18px);
+  }
+}
+
+/* ── TELÉFONOS MUY PEQUEÑOS: < 360px ─────────────── */
+@media (max-width: 359px) {
+
+  .card { padding: 22px 14px; border-radius: 14px; }
+  .question { font-size: 1.2rem; }
+  .subtitle { font-size: 0.82rem; margin-bottom: 22px; }
+  .btn { padding: 11px 16px; font-size: 0.9rem; }
+
+  .yes-heart-big { font-size: 48px; }
+  .yes-message h2 { font-size: 1rem; }
+
+  .pelusa-heart-wrap {
+    width: 88px; height: 88px;
+    margin: 10px auto 14px;
+  }
+
+  .letter-title  { font-size: 0.95rem; }
+  .letter-para   { font-size: 0.82rem; line-height: 1.65; }
+  .letter-sign   { font-size: 1rem; }
+  .cta-btn       { padding: 10px 16px; font-size: 0.8rem; }
+
+  .envelope {
+    width: 130px; height: 91px;
+  }
+}
+
+/* ── AJUSTE ALTURA: teléfonos en landscape ────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  #main-content { align-items: flex-start; overflow-y: auto; padding: 12px; }
+  .card { margin: 8px auto; max-height: none; }
+
+  #yes-screen { align-items: flex-start; overflow-y: auto; }
+  .yes-message { padding: 12px 16px; }
+  .yes-heart-big { font-size: 48px; margin-bottom: 6px; }
+
+  #letter-screen { align-items: flex-start; padding: 12px; }
+  .letter-inner  { padding: 18px 16px; }
+
+  /* Sobre más pequeño en landscape */
+  .envelope {
+    width: clamp(130px, 28vw, 200px);
+    height: clamp(91px, 19.6vw, 140px);
+  }
+}
+
+/* ── SAFE AREA: notch / Dynamic Island / bottom bar ── */
+@supports (padding: env(safe-area-inset-top)) {
+  #intro-screen,
+  #main-content,
+  #yes-screen,
+  #letter-screen {
+    padding-top:    max(20px, env(safe-area-inset-top));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    padding-left:   max(12px, env(safe-area-inset-left));
+    padding-right:  max(12px, env(safe-area-inset-right));
+  }
+}
+
+/* ── TOUCH: feedback táctil en botones ──────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .btn:hover        { transform: none; }
+  .btn:active       { transform: scale(0.96); opacity: 0.9; }
+  .cta-btn:hover    { transform: none; }
+  .cta-btn:active   { transform: scale(0.96); }
+  .btn::after,
+  .cta-btn::after   { display: none; } /* sin shimmer en touch */
+}
